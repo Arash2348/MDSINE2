@@ -97,17 +97,17 @@ class SyntheticCLI(CLIModule):
             help='This is the seed to initialize the inference with'
         )
         parser.add_argument(
-            '--a0-level', '-a0', type=int, dest='a0_level',
+            '--a0-level', '-a0', type=float, dest='a0_level',
             required=True,
             help='This is the a0-noise-level for the synthetic data-generation parameter'
         )
         parser.add_argument(
-            '--a1-level', '-a1', type=int, dest='a1_level',
+            '--a1-level', '-a1', type=float, dest='a1_level',
             required=True,
             help='This is the a1-noise-level for the synthetic data-generation parameter'
         )
         parser.add_argument(
-            '--qpcr-level', '-qpcr', type=int, dest='qpcr_level',
+            '--qpcr-level', '-qpcr', type=float, dest='qpcr_level',
             required=True,
             help='This is the qpcr-noise-level for the synthetic data-generation parameter'
         )
@@ -145,7 +145,7 @@ class SyntheticCLI(CLIModule):
         )
 
     def main(self, args: argparse.Namespace):
-        Print("Started to run main within synthetic.py")
+        print("Started to run main within synthetic.py")
         # 1) load dataset
         logger.info('Loading dataset {}'.format(args.input))
         mcmc = md2.BaseMCMC.load(args.input) #might be study.load instead of BaseMCMC
