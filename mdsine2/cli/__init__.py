@@ -1,5 +1,6 @@
 from .base import dispatch
 from .parse_input import InputParseCLI
+from .synthetic import SyntheticCLI
 from .taxa_filter import TaxaFilterCLI
 from .render_phylogeny import PhylogenyRenderCLI
 from .inference import InferenceCLI
@@ -10,7 +11,6 @@ from .visualize_posterior import PosteriorVisualizationCLI
 from .forward_simulate import ForwardSimulationCLI
 from .compute_keystoneness import KeystonenessCLI
 from .plot_subjects import PlotSubjectCLI
-from .extract_abundance import ExtractAbundancesCLI
 
 
 def main():
@@ -27,7 +27,7 @@ def main():
         ForwardSimulationCLI(subcommand="forward-simulate"),
         KeystonenessCLI(subcommand="evaluate-keystoneness"),
         PlotSubjectCLI(subcommand="plot-subjects"),
-        ExtractAbundancesCLI(subcommand="extract-abundances")
+        SyntheticCLI(subcommand="synthetic")
     ]
 
     dispatch({
