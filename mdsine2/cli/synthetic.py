@@ -148,7 +148,7 @@ class SyntheticCLI(CLIModule):
         print("Started to run main within synthetic.py")
         # 1) load dataset
         logger.info('Loading dataset {}'.format(args.input))
-        mcmc = md2.Study.load(args.input) #might be study.load instead of BaseMCMC
+        mcmc = md2.BaseMCMC.load(args.input) #might be study.load instead of BaseMCMC
         study1 = md2.Study.load(args.input)
         if args.rename_study is not None:
             if args.rename_study.lower() != 'none':
