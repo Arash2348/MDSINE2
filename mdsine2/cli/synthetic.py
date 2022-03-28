@@ -164,7 +164,7 @@ class SyntheticCLI(CLIModule):
 
         # 3) Make semi_syn object and save to pickle for downstream metrics
         semi_syn = setup_semisynthetic_system(mcmc)
-        pickle_loc_ss = basepath + "/semi_syn_" + args.seed + ".pkl"
+        pickle_loc_ss = basepath + "/semi_syn_" + str(args.seed) + ".pkl"
         pickle.dump(semi_syn, open(pickle_loc_ss, "wb"))  #You might need something with basepath here
 
         # 4) Create study object based on synthetic paramaters; later used in inference
@@ -174,7 +174,7 @@ class SyntheticCLI(CLIModule):
 
         #5) Run inference on study object and save to pickle file for downstream metrics
         mcmc_syn = run_inference(study, basepath, args.seed, args.burnin, args.n_samples, args.checkpoint)
-        pickle_loc_ms = basepath + "/mcmc_syn_" + args.seed + ".pkl" #This might make double MCMC files; check to see if it does after we run it
+        pickle_loc_ms = basepath + "/mcmc_syn_" + str(args.seed) + ".pkl" #This might make double MCMC files; check to see if it does after we run it
         pickle.dump(mcmc_syn, open(pickle_loc_ms, "wb")) #This might make double MCMC files; check to see if it does after we run it
 
 
