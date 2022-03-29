@@ -11,6 +11,7 @@ from .visualize_posterior import PosteriorVisualizationCLI
 from .forward_simulate import ForwardSimulationCLI
 from .compute_keystoneness import KeystonenessCLI
 from .plot_subjects import PlotSubjectCLI
+from .metrics import MetricsCLI
 
 
 def main():
@@ -27,7 +28,8 @@ def main():
         ForwardSimulationCLI(subcommand="forward-simulate"),
         KeystonenessCLI(subcommand="evaluate-keystoneness"),
         PlotSubjectCLI(subcommand="plot-subjects"),
-        SyntheticCLI(subcommand="synthetic")
+        SyntheticCLI(subcommand="synthetic"),
+        MetricsCLI(subcommand="metrics")
     ]
 
     dispatch({
