@@ -44,20 +44,29 @@ def plot_posteriors(mcmc_syn, study):
 #         arr[gibb] = md2.metrics.RMSE(truth, pred[gibb])
 #     print('Average RMSE error of interactions:', np.mean(arr))
 
-def calculate_RMSEgrowth(mcmc_syn, semi_syn, rename_study, basepath):
+def calculate_RMSEgrowth(mcmc_syn_l, mcmc_syn_m, mcmc_syn_h, semi_syn, rename_study, basepath):
     # METRIC 3: RMSE of growth values
     # ---------------------
     truth = semi_syn.model.growth
-    pred = mcmc_syn.graph[STRNAMES.GROWTH_VALUE].get_trace_from_disk()
-    print(pred.shape)
-    print(truth.shape)
-    arr = np.zeros(pred.shape[0])
-    for gibb in range(len(arr)):
-        arr[gibb] = md2.metrics.RMSE(truth, pred[gibb])
-    print("This is the array:", arr)
-    print('Average RMSE error of growth values', np.mean(arr))
-    sns.boxplot(data=arr, color="#f045a7")
-    sns.swarmplot(data=arr, color=".25")
+    pred_l = mcmc_syn_l.graph[STRNAMES.GROWTH_VALUE].get_trace_from_disk()
+    pred_m = mcmc_syn_m.graph[STRNAMES.GROWTH_VALUE].get_trace_from_disk()
+    pred_h = mcmc_syn_h.graph[STRNAMES.GROWTH_VALUE].get_trace_from_disk()
+
+    pred_list =[pred_l, pred_m, pred_h]
+    array_list = []
+
+    for i in pred_list:
+        print(i.shape)
+        print(truth.shape)
+        arr = np.zeros(i.shape[0])
+        for gibb in range(len(arr)):
+            arr[gibb] = md2.metrics.RMSE(truth, i[gibb])
+        print("This is the RMSE array of" + str(i) + ":", arr)
+        print('Average RMSE error of growth values of' + str(i), np.mean(arr))
+        array_list.append(arr)
+
+    sns.boxplot(data=array_list, color="#f045a7")
+    sns.swarmplot(data=array_list, color=".25")
 
     plt_name = rename_study + "-metric-img"
     plt_path = basepath + "/" + rename_study +"/" + plt_name
@@ -73,9 +82,21 @@ class MetricsCLI(CLIModule):
 
     def create_parser(self, parser: argparse.ArgumentParser):
         parser.add_argument(
-            '--input-mcmc', '-im', type=str, dest='input_mcmc',
+            '--input-mcmc-low', '-iml', type=str, dest='input_mcmc_low',
             required=True,
-            help='This is the mcmc file to be used in to calculate metrics'
+            help='This is the mcmc low file to be used in to calculate metrics'
+        )
+
+        parser.add_argument(
+            '--input-mcmc-med', '-imm', type=str, dest='input_mcmc_med',
+            required=True,
+            help='This is the mcmc medium file to be used in to calculate metrics'
+        )
+
+        parser.add_argument(
+            '--input-mcmc-high', '-imh', type=str, dest='input_mcmc_high',
+            required=True,
+            help='This is the mcmc high file to be used in to calculate metrics'
         )
 
         parser.add_argument(
@@ -107,11 +128,13 @@ class MetricsCLI(CLIModule):
         logger.info('Loading semi_syn file {}'.format(args.input_semi_syn))
 
         #1) Grab the respective mcmc_syn file and semi_syn file
-        mcmc_syn = md2.BaseMCMC.load(args.input_mcmc)
+        mcmc_syn_low = md2.BaseMCMC.load(args.input_mcmc_low)
+        mcmc_syn_med = md2.BaseMCMC.load(args.input_mcmc_med)
+        mcmc_syn_high = md2.BaseMCMC.load(args.input_mcmc_high)
         semi_syn = pickle.load(open(args.input_semi_syn, "rb"))
 
-        #2) Use Metric Calcuate function for Graphs
-        calculate_RMSEgrowth(mcmc_syn, semi_syn, args.rename_study, args.basepath)
+        #2) Use Metric Calculate function for Graphs
+        calculate_RMSEgrowth(mcmc_syn_low, mcmc_syn_med, mcmc_syn_high, semi_syn, args.rename_study, args.basepath)
 
 
 

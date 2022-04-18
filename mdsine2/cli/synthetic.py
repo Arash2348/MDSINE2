@@ -43,12 +43,14 @@ cd {code_basepath}
 # Run the metrics file 
 # -------------
 mdsine2 metrics\
-    --input-mcmc {input_mcmc} \
+    --input-mcmc-low {input_mcmc_low} \
+    --input-mcmc-med {input_mcmc_med} \
+    --input-mcmc-high {input_mcmc_high} \
     --input-semi-syn {input_semi_syn} \
     --seed {seed} \
     --rename-study {rename_study} \
     --output-basepath {basepath} \
-
+        
 
 '''
 
@@ -151,21 +153,25 @@ class SyntheticCLI(CLIModule):
             required=True,
             help='This is the seed to initialize the inference with'
         )
-        parser.add_argument(
-            '--a0-level', '-a0', type=float, dest='a0_level',
-            required=True,
-            help='This is the a0-noise-level for the synthetic data-generation parameter'
-        )
-        parser.add_argument(
-            '--a1-level', '-a1', type=float, dest='a1_level',
-            required=True,
-            help='This is the a1-noise-level for the synthetic data-generation parameter'
-        )
-        parser.add_argument(
-            '--qpcr-level', '-qpcr', type=float, dest='qpcr_level',
-            required=True,
-            help='This is the qpcr-noise-level for the synthetic data-generation parameter'
-        )
+        parser.add_argument('--a0-level-low', '-a0l', type=float, dest='a0_level_low',
+                            help='This is the a0-noise-level low for the synthetic data-generation parameter')
+        parser.add_argument('--a1-level-low', '-a1l', type=float, dest='a1_level_low',
+                            help='This is the a1-noise-level low for the synthetic data-generation parameter')
+        parser.add_argument('--qpcr-level-low', '-qpcrl', type=float, dest='qpcr_level_low',
+                            help='This is the qpcr-noise-level low for the synthetic data-generation parameter')
+        parser.add_argument('--a0-level-med', '-a0m', type=float, dest='a0_level_med',
+                            help='This is the a0-noise-level medium for the synthetic data-generation parameter')
+        parser.add_argument('--a1-level-med', '-a1m', type=float, dest='a1_level_med',
+                            help='This is the a1-noise-level medium for the synthetic data-generation parameter')
+        parser.add_argument('--qpcr-level-med', '-qpcrm', type=float, dest='qpcr_level_med',
+                            help='This is the qpcr-noise-level medium for the synthetic data-generation parameter')
+        parser.add_argument('--a0-level-high', '-a0h', type=float, dest='a0_level_high',
+                            help='This is the a0-noise-level high for the synthetic data-generation parameter')
+        parser.add_argument('--a1-level-high', '-a1h', type=float, dest='a1_level_high',
+                            help='This is the a1-noise-level high for the synthetic data-generation parameter')
+        parser.add_argument('--qpcr-level-high', '-qpcrh', type=float, dest='qpcr_level_high',
+                            help='This is the qpcr-noise-level high for the synthetic data-generation parameter')
+
         parser.add_argument(
             '--burnin', '-nb', type=int, dest='burnin',
             required=True,
@@ -239,14 +245,25 @@ class SyntheticCLI(CLIModule):
         pickle.dump(semi_syn, open(pickle_loc_ss, "wb"))  #You might need something with basepath here
 
         # 4) Create study object based on synthetic paramaters; later used in inference
-        study = make_semisynthetic_object(args.a0_level, args.a1_level, args.qpcr_level, semi_syn)
+        study_low = make_semisynthetic_object(args.a0_level_low, args.a1_level_low, args.qpcr_level_low, semi_syn)
+        study_med = make_semisynthetic_object(args.a0_level_med, args.a1_level_med, args.qpcr_level_med, semi_syn)
+        study_high = make_semisynthetic_object(args.a0_level_high, args.a1_level_high, args.qpcr_level_high, semi_syn)
+
         taxa = semi_syn.taxa
         print(len(taxa))
 
         #5) Run inference on study object and save to pickle file for downstream metrics
-        mcmc_syn = run_inference(study, basepath, args.seed, args.burnin, args.n_samples, args.checkpoint)
-        pickle_loc_ms = basepath + "/mcmc_syn_" + str(args.seed) + ".pkl" #This might make double MCMC files; check to see if it does after we run it
-        pickle.dump(mcmc_syn, open(pickle_loc_ms, "wb")) #This might make double MCMC files; check to see if it does after we run it
+        mcmc_syn_low = run_inference(study_low, basepath, args.seed, args.burnin, args.n_samples, args.checkpoint)
+        pickle_loc_ms_low = basepath + "/mcmc_syn_low_" + str(args.seed) + ".pkl" #This might make double MCMC files; check to see if it does after we run it
+        pickle.dump(mcmc_syn_low, open(pickle_loc_ms_low, "wb")) #This might make double MCMC files; check to see if it does after we run it
+
+        mcmc_syn_med = run_inference(study_med, basepath, args.seed, args.burnin, args.n_samples, args.checkpoint)
+        pickle_loc_ms_med = basepath + "/mcmc_syn_med_" + str(args.seed) + ".pkl"
+        pickle.dump(mcmc_syn_med, open(pickle_loc_ms_med, "wb"))
+
+        mcmc_syn_high = run_inference(study_high, basepath, args.seed, args.burnin, args.n_samples, args.checkpoint)
+        pickle_loc_ms_high = basepath + "/mcmc_syn_high_" + str(args.seed) + ".pkl"
+        pickle.dump(mcmc_syn_high, open(pickle_loc_ms_high, "wb"))
 
         ####------LSF Creation Section Starts------#
         # Make the arguments
@@ -271,12 +288,12 @@ class SyntheticCLI(CLIModule):
             jobname=jobname, stdout_loc=stdout_loc, stderr_loc=stderr_loc,
             environment_name=args.environment_name,
             code_basepath=args.code_basepath, queue=args.queue, cpus=args.cpus,
-            mem=args.memory, seed=args.seed, input_mcmc=pickle_loc_ms, input_semi_syn=pickle_loc_ss,
-            rename_study=args.rename_study, basepath=args.basepath))
+            mem=args.memory, seed=args.seed, input_mcmc_low=pickle_loc_ms_low, input_mcmc_med=pickle_loc_ms_med, input_mcmc_high=pickle_loc_ms_high,
+            input_semi_syn=pickle_loc_ss, rename_study=args.rename_study, basepath=args.basepath))
         f.close()
         command = 'bsub < {}'.format(lsfname)
         print(command)
-        print("Successfuly got to almost end of synthetic.py")
+        print("Successfully got to almost end of synthetic.py")
         os.system(command)
 
 # -----------------------REMOVE THIS LATER------------------------
