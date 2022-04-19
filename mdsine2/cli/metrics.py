@@ -49,22 +49,29 @@ def calculate_RMSEgrowth(mcmc_syn_l, mcmc_syn_m, mcmc_syn_h, semi_syn, rename_st
     # ---------------------
     truth = semi_syn.model.growth
     pred_l = mcmc_syn_l.graph[STRNAMES.GROWTH_VALUE].get_trace_from_disk()
+    print("Pred_l:", pred_l)
     pred_m = mcmc_syn_m.graph[STRNAMES.GROWTH_VALUE].get_trace_from_disk()
+    print("Pred_m:", pred_m)
     pred_h = mcmc_syn_h.graph[STRNAMES.GROWTH_VALUE].get_trace_from_disk()
+    print("Pred_h:", pred_h)
+
 
     pred_list =[pred_l, pred_m, pred_h]
     array_list = []
 
     for i in pred_list:
+        count = 1
         print(i.shape)
         print(truth.shape)
         arr = np.zeros(i.shape[0])
         for gibb in range(len(arr)):
             arr[gibb] = md2.metrics.RMSE(truth, i[gibb])
-        print("This is the RMSE array of" + str(i) + ":", arr)
-        print('Average RMSE error of growth values of' + str(i), np.mean(arr))
+        print("This is the RMSE array of" + str(count), arr)
+        print('Average RMSE error of growth values of' + str(count), np.mean(arr))
+        count = count + 1
         array_list.append(arr)
 
+    print("This is full array_list:", array_list)
     sns.boxplot(data=array_list, color="#f045a7")
     sns.swarmplot(data=array_list, color=".25")
 
