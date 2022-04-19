@@ -124,7 +124,9 @@ class MetricsCLI(CLIModule):
 
     def main(self, args: argparse.Namespace):
         print("Started to run main within metrics.py")
-        logger.info('Loading mcmc file {}'.format(args.input_mcmc))
+        logger.info('Loading mcmc file {}'.format(args.input_mcmc_low))
+        logger.info('Loading mcmc file {}'.format(args.input_mcmc_med))
+        logger.info('Loading mcmc file {}'.format(args.input_mcmc_high))
         logger.info('Loading semi_syn file {}'.format(args.input_semi_syn))
 
         #1) Grab the respective mcmc_syn file and semi_syn file
