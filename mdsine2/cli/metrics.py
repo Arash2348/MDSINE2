@@ -131,13 +131,17 @@ class MetricsCLI(CLIModule):
 
         #1) Grab the respective mcmc_syn file and semi_syn file
         mcmc_syn_low = md2.BaseMCMC.load(args.input_mcmc_low)
+        print("Finished low")
         mcmc_syn_med = md2.BaseMCMC.load(args.input_mcmc_med)
+        print("Finished medium")
         mcmc_syn_high = md2.BaseMCMC.load(args.input_mcmc_high)
+        print("Finished high")
         semi_syn = pickle.load(open(args.input_semi_syn, "rb"))
 
         #2) Use Metric Calculate function for Graphs
         calculate_RMSEgrowth(mcmc_syn_low, mcmc_syn_med, mcmc_syn_high, semi_syn, args.rename_study, args.basepath)
 
+        print("Finished main of metrics.py and entire program")
 
 
         # mcmc_syn = md2.BaseMCMC.load('/PHShome/as1010/synthetic_new_arash/mcmc.pkl')
