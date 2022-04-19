@@ -93,7 +93,7 @@ def setup_semisynthetic_system(mcmc):
     return semi_syn
 
 
-# Create semi-synthetic data object--with selected noise levels--from synethic system
+# Create semi-synthetic data object--with selected noise levels--from synthetic system
 def make_semisynthetic_object(a0_level, a1_level, qpcr_level, semi_syn):
     # Simulate noise and create object
     study = semi_syn.simulateMeasurementNoise(

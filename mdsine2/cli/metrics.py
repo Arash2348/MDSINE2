@@ -58,16 +58,16 @@ def calculate_RMSEgrowth(mcmc_syn_l, mcmc_syn_m, mcmc_syn_h, semi_syn, rename_st
 
     pred_list =[pred_l, pred_m, pred_h]
     array_list = []
+    count = 1
 
     for i in pred_list:
-        count = 1
         print(i.shape)
         print(truth.shape)
         arr = np.zeros(i.shape[0])
         for gibb in range(len(arr)):
             arr[gibb] = md2.metrics.RMSE(truth, i[gibb])
-        print("This is the RMSE array of" + str(count), arr)
-        print('Average RMSE error of growth values of' + str(count), np.mean(arr))
+        print("This is the RMSE array of " + str(count), arr)
+        print('Average RMSE error of growth values of ' + str(count), np.mean(arr))
         count = count + 1
         array_list.append(arr)
 
