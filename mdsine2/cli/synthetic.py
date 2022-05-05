@@ -249,6 +249,15 @@ class SyntheticCLI(CLIModule):
         study_med = make_semisynthetic_object(args.a0_level_med, args.a1_level_med, args.qpcr_level_med, semi_syn)
         study_high = make_semisynthetic_object(args.a0_level_high, args.a1_level_high, args.qpcr_level_high, semi_syn)
 
+        when_true_1 = (study_low == study_med)
+        when_true_2 = (study_low == study_high)
+        when_true_3 = (study_med == study_high)
+
+
+        print("THE BOOLEAN RIGHT NOW:", when_true_1, when_true_2, when_true_3)
+
+
+
         taxa = semi_syn.taxa
         print(len(taxa))
 
